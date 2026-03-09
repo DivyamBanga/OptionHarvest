@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "optionharvest"
+version = "0.1.0"
+description = "0DTE QQQ option premium selling backtester and live trading bot"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "yfinance>=0.2.30",
+    "pyarrow>=14.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+]
+live = [
+    "ib_insync>=0.9.86",
+]
+dashboard = [
+    "streamlit>=1.30",
+    "plotly>=5.18",
+]
+
+[tool.setuptools.packages.find]
+include = ["optionharvest*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

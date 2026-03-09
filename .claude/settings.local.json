@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.interactivebrokers.com)",
+      "Bash(pip install:*)",
+      "Bash(python:*)",
+      "WebFetch(domain:polygon.io)",
+      "WebFetch(domain:massive.com)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:docs.alpaca.markets)",
+      "WebFetch(domain:alpaca.markets)"
+    ]
+  }
+}

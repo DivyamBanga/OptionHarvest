@@ -1,2 +1,2 @@
 # OptionHarvest
-A backtesting engine for 0DTE option premium selling strategies on QQQ
+An automated paper trading bot for 0DTE QQQ option selling on Alpaca
