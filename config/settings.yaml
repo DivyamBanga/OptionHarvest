@@ -1,42 +1,43 @@
 # OptionHarvest configuration
 # ============================
 
-# Data pipeline
-data:
-  underlying: "QQQ"
-  start_date: "2020-01-01"
-  storage_dir: "data/processed"
-
-# Implied volatility model
-# VIX (30-day SPX IV) is adjusted for QQQ and 0DTE term structure
-iv_model:
-  qqq_vix_ratio: 1.15          # QQQ is ~15% more volatile than SPX
-  term_structure_0dte: 0.90     # 0DTE IV ≈ 90% of 30-day IV (normal markets)
-  skew_put_slope: 1.5           # OTM puts have steeper skew (crash fear)
-  skew_call_slope: 0.3          # OTM calls have mild skew
-
-# Chain generation
-chain:
-  strike_range_pct: 0.10        # generate strikes within ±10% of spot
-  strike_spacing: 1.0           # $1 strike intervals
-  risk_free_rate: 0.05          # annual risk-free rate
-  trading_hours: 6.5            # market hours per day
-  entry_delay_minutes: 1        # enter 1 min after open (9:31 AM)
-
-# Strategy parameters (used by backtester — Task 2)
+# Strategy parameters -- what to sell
 strategy:
   target_premium: 1.50          # desired premium per contract ($150 actual)
-  option_type: "put"            # "put", "call", or "both"
+  option_type: "put"            # "put", "call", or "both" (strangle)
   strike_selection: "premium"   # "premium" or "delta"
   target_delta: 0.10            # used if strike_selection is "delta"
-  num_contracts: 1
-  use_spread: false
-  spread_width: 5
-  slippage: 0.05                # assumed slippage per contract ($)
-  commission: 0.65              # IBKR commission per contract ($)
+  num_contracts: 1              # how many contracts to sell
+  min_open_interest: 100        # skip illiquid options
+  max_bid_ask_spread: 0.50      # skip wide spreads
 
-# Account parameters (used by backtester — Task 3)
-account:
-  starting_capital: 25000
-  margin_model: "reg_t"         # "reg_t" or "portfolio_margin"
-  max_daily_risk: 0.05          # max 5% of account at risk per day
+# Chain generation -- how to filter the options chain
+chain:
+  strike_range_pct: 0.10        # fetch strikes within +/- 10% of spot
+
+# Execution parameters -- when and how to trade
+execution:
+  entry_time: "09:31"           # enter after 9:31 AM ET
+  exit_time: "15:15"            # exit by 3:15 PM ET (before Alpaca auto-liquidation at 3:30)
+  monitor_interval: 60          # poll position every 60 seconds
+  fill_timeout: 120             # wait 2 min for fill before adjusting
+  max_price_adjustments: 3      # adjust limit price up to 3 times
+
+# Exit rules -- when to close a position
+exit:
+  stop_loss_multiplier: 2.0     # exit if option price >= 2x entry premium
+  profit_target_pct: 0.50       # exit if option decays to 50% of entry
+  use_stop_loss: true
+  use_profit_target: true
+
+# Risk controls -- protect the account
+risk:
+  max_daily_loss: 500.0         # stop trading if daily loss exceeds $500
+  max_weekly_loss: 1500.0       # stop trading if weekly loss exceeds $1500
+  max_position_pct: 0.05        # max 5% of equity at risk per trade
+  circuit_breaker_loss_pct: 0.03  # close all if unrealized loss > 3% of equity
+  circuit_breaker_qqq_move: 0.03  # close all if QQQ moves > 3% from open
+
+# Analytics -- where to store trade logs
+analytics:
+  trade_log_dir: "data/trades"
