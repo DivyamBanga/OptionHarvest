@@ -11,7 +11,10 @@
       "WebFetch(domain:massive.com)",
       "WebFetch(domain:medium.com)",
       "WebFetch(domain:docs.alpaca.markets)",
-      "WebFetch(domain:alpaca.markets)"
+      "WebFetch(domain:alpaca.markets)",
+      "Bash(where python:*)",
+      "Bash(C:\\\\Users\\\\divya\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\python.exe:*)",
+      "Bash(\"C:/Users/divya/AppData/Local/Programs/Python/Python313/python.exe\":*)"
     ]
   }
 }
