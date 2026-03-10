@@ -2,8 +2,10 @@
 OptionHarvest entry point.
 
 Usage:
-    python run.py                    # run the trading bot
+    python run.py                    # run the trading bot for today
+    python run.py --schedule         # run continuously (every trading day)
     python run.py --dry-run          # validate config and connection only
+    python run.py --report           # print full performance report
     python run.py --config path.yaml # use a custom config file
 """
 
@@ -28,22 +30,23 @@ def main() -> None:
         "--dry-run", action="store_true",
         help="Validate config and connection without trading",
     )
+    parser.add_argument(
+        "--schedule", action="store_true",
+        help="Run continuously -- auto-trade every trading day",
+    )
+    parser.add_argument(
+        "--report", action="store_true",
+        help="Print full performance report and exit",
+    )
     args = parser.parse_args()
 
     try:
         if args.dry_run:
-            log.info("=== DRY RUN MODE ===")
-            cfg = load_config(args.config)
-            log.info("Config loaded: %s", args.config)
-
-            bot = TradingBot.from_config(args.config)
-            log.info("All components initialized")
-
-            if bot.client.verify_connection():
-                log.info("Connection verified -- dry run PASSED")
-            else:
-                log.error("Connection failed -- dry run FAILED")
-                sys.exit(1)
+            _dry_run(args.config)
+        elif args.report:
+            _show_report(args.config)
+        elif args.schedule:
+            _run_scheduled(args.config)
         else:
             bot = TradingBot.from_config(args.config)
             bot.run()
@@ -53,6 +56,42 @@ def main() -> None:
     except Exception as exc:
         log.error("Fatal error: %s", exc, exc_info=True)
         sys.exit(1)
+
+
+def _dry_run(config_path: str) -> None:
+    log.info("=== DRY RUN MODE ===")
+    cfg = load_config(config_path)
+    log.info("Config loaded: %s", config_path)
+
+    bot = TradingBot.from_config(config_path)
+    log.info("All components initialized")
+
+    if bot.client.verify_connection():
+        log.info("Connection verified -- dry run PASSED")
+    else:
+        log.error("Connection failed -- dry run FAILED")
+        sys.exit(1)
+
+
+def _show_report(config_path: str) -> None:
+    from optionharvest.analytics.reporter import Reporter
+    from optionharvest.analytics.tracker import TradeTracker
+
+    cfg = load_config(config_path)
+    tracker = TradeTracker.from_config(cfg)
+    reporter = Reporter(tracker)
+
+    reporter.print_full_report()
+    reporter.print_weekly_report()
+    reporter.print_monthly_report()
+
+
+def _run_scheduled(config_path: str) -> None:
+    from optionharvest.trading.scheduler import TradingScheduler
+
+    bot = TradingBot.from_config(config_path)
+    scheduler = TradingScheduler.from_bot(bot)
+    scheduler.run_forever()
 
 
 if __name__ == "__main__":

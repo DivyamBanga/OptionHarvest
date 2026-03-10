@@ -200,24 +200,65 @@ All three run together as one bot, every trading day.
 
 ---
 
-## PHASE 3: MONITORING AND ALERTS
+## PHASE 3: DASHBOARD AND CONTROL PANEL
 
-### Task 8: Dashboard and Alerts
-**Goal:** Know what's happening without watching the screen.
+### Task 8: Dashboard
+**Goal:** One page to see everything and control the bot. Clean, minimal, no clutter.
 
-- [ ] **8.1** Build a simple web dashboard (Streamlit)
-  - Show today's trade: strike, premium, current P&L
-  - Show cumulative performance (equity curve)
-  - Show account balance and buying power
-- [ ] **8.2** Set up alerts
+**Design principles:**
+- **Minimal** -- only show what matters, no decorative junk
+- **2-3 colors max** -- neutral background, green for profit, red for loss. That's it.
+- **Big numbers** -- P&L and account balance should be the first thing you see
+- **Grouped logically** -- status up top, controls in sidebar, history below
+- **Looks like a tool, not a template** -- no gradients, no card shadows, no icons everywhere. Flat, clean, tight spacing. The kind of thing a trader builds for themselves.
+
+- [ ] **8.1** Dashboard layout (Streamlit)
+  - **Top bar:** bot status (running/stopped/waiting), current time ET, market open/closed
+  - **Main area:**
+    - Account: equity, cash, buying power -- big readable numbers
+    - Today's trade: symbol, strike, entry price, current price, unrealized P&L
+    - If no trade today: "No trade today" with the reason why
+  - **Bottom area:**
+    - Trade history table (last 20 trades from CSV)
+    - Equity curve chart (cumulative P&L over time)
+  - **Sidebar:** settings control panel (see 8.3)
+
+- [ ] **8.2** Performance stats section
+  - Total P&L, win rate, profit factor -- shown as simple numbers, not charts
+  - Average win vs average loss
+  - Best day, worst day, current streak
+  - Weekly and monthly roll-up (collapsible)
+  - Equity curve: one clean line chart, no grid clutter
+
+- [ ] **8.3** Settings control panel (sidebar)
+  - **Strategy controls:**
+    - Target premium (slider: $0.50 - $5.00)
+    - Option type (dropdown: put / call / both)
+    - Number of contracts (1-10)
+    - Strike selection mode (premium / delta)
+    - Target delta (slider: 0.05 - 0.30)
+  - **Exit controls:**
+    - Stop-loss multiplier (slider: 1.5x - 5.0x)
+    - Profit target % (slider: 25% - 80%)
+    - Toggle stop-loss on/off
+    - Toggle profit target on/off
+  - **Risk controls:**
+    - Max daily loss (input: $100 - $5000)
+    - Max weekly loss (input: $500 - $10000)
+    - Max position size % (slider: 1% - 20%)
+    - Circuit breaker loss % (slider: 1% - 10%)
+    - Circuit breaker QQQ move % (slider: 1% - 10%)
+  - **Bot controls:**
+    - Kill switch button (big red, toggles KILL_SWITCH file)
+    - "Save settings" button (writes to settings.yaml, takes effect next trade)
+  - Changes save to `config/settings.yaml` -- bot picks them up on next cycle
+
+- [ ] **8.4** Alerts
   - Trade placed notification
   - Stop-loss triggered notification
   - Daily P&L summary notification
   - Error/disconnection alert
-- [ ] **8.3** Performance tracking
-  - Plot equity curve over time
-  - Compare different parameter settings
-  - Track fill quality (slippage from mid-price)
+  - (Start with console/log alerts. Telegram/Discord is optional later.)
 
 ---
 
@@ -232,7 +273,7 @@ All three run together as one bot, every trading day.
 | Data storage       | CSV + Parquet files               |
 | Data processing    | pandas, numpy                     |
 | Visualization      | plotly, matplotlib                |
-| Dashboard          | Streamlit                         |
+| Dashboard          | Streamlit (monitor + control panel)|
 | Scheduling         | APScheduler                       |
 | Notifications      | Telegram Bot API or Discord       |
 | Logging            | Python logging + rotating files   |
@@ -272,6 +313,8 @@ OptionHarvest/
 │   │   ├── __init__.py
 │   │   ├── tracker.py         # P&L tracking and trade log
 │   │   └── reporter.py        # daily/weekly reports
+│   ├── dashboard/
+│   │   └── app.py             # Streamlit dashboard + control panel
 │   └── utils/
 │       ├── __init__.py
 │       ├── logger.py          # logging setup
@@ -300,7 +343,7 @@ OptionHarvest/
 5. **Risk controls** (Task 5) -- protect the account
 6. **Scheduling** (Task 6) -- automate daily runs
 7. **Analytics** (Task 7) -- track how it's going
-8. **Dashboard and alerts** (Task 8) -- monitor without babysitting
+8. **Dashboard** (Task 8) -- monitor and control the bot from one page
 
 ---
 

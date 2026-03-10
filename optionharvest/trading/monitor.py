@@ -60,15 +60,30 @@ class PositionMonitor:
             symbol, qty, entry_price, self.poll_interval,
         )
 
+        consecutive_errors = 0
+        max_consecutive_errors = 5
+
         while True:
             try:
                 result = self._check_once(
                     symbol, entry_price, qty, qqq_open, account_equity,
                 )
+                consecutive_errors = 0  # reset on success
                 if result is not None:
                     return result
             except Exception as exc:
-                log.error("Monitor poll error: %s", exc)
+                consecutive_errors += 1
+                log.error(
+                    "Monitor poll error (%d/%d): %s",
+                    consecutive_errors, max_consecutive_errors, exc,
+                )
+                if consecutive_errors >= max_consecutive_errors:
+                    log.critical(
+                        "Too many consecutive errors -- force closing position"
+                    )
+                    return self._execute_exit(
+                        symbol, qty, entry_price, "api_error",
+                    )
 
             time.sleep(self.poll_interval)
 
