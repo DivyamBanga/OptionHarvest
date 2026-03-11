@@ -37,7 +37,7 @@ class StrikeSelector:
 
     def __init__(
         self,
-        target_premium: float = 1.50,
+        target_premium: float = 0.75,
         option_type: str = "put",
         strike_selection: str = "premium",
         target_delta: float = 0.10,
@@ -55,7 +55,7 @@ class StrikeSelector:
     def from_config(cls, cfg: dict) -> "StrikeSelector":
         strategy = cfg.get("strategy", {})
         return cls(
-            target_premium=strategy.get("target_premium", 1.50),
+            target_premium=strategy.get("target_premium", 0.75),
             option_type=strategy.get("option_type", "put"),
             strike_selection=strategy.get("strike_selection", "premium"),
             target_delta=strategy.get("target_delta", 0.10),

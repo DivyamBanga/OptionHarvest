@@ -18,8 +18,8 @@ class RiskLimits:
 
     def __init__(
         self,
-        max_daily_loss: float = 500.0,
-        max_weekly_loss: float = 1500.0,
+        max_daily_loss: float = 300.0,
+        max_weekly_loss: float = 1000.0,
         max_position_pct: float = 0.05,
     ) -> None:
         self.max_daily_loss = max_daily_loss
@@ -33,8 +33,8 @@ class RiskLimits:
     def from_config(cls, cfg: dict) -> "RiskLimits":
         risk = cfg.get("risk", {})
         return cls(
-            max_daily_loss=risk.get("max_daily_loss", 500.0),
-            max_weekly_loss=risk.get("max_weekly_loss", 1500.0),
+            max_daily_loss=risk.get("max_daily_loss", 300.0),
+            max_weekly_loss=risk.get("max_weekly_loss", 1000.0),
             max_position_pct=risk.get("max_position_pct", 0.05),
         )
 

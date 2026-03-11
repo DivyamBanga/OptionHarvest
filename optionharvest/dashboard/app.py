@@ -176,7 +176,7 @@ def render_sidebar(cfg: dict) -> dict:
             target_premium = st.number_input(
                 "Premium ($)",
                 min_value=0.25, max_value=10.0,
-                value=float(strategy.get("target_premium", 1.50)),
+                value=float(strategy.get("target_premium", 0.75)),
                 step=0.25, format="%.2f",
             )
         with col2:
@@ -226,11 +226,11 @@ def render_sidebar(cfg: dict) -> dict:
             st.caption("RISK LIMITS")
             max_daily = st.number_input(
                 "Max daily loss ($)", 100, 5000,
-                value=int(risk.get("max_daily_loss", 500)), step=100,
+                value=int(risk.get("max_daily_loss", 300)), step=100,
             )
             max_weekly = st.number_input(
                 "Max weekly loss ($)", 500, 10000,
-                value=int(risk.get("max_weekly_loss", 1500)), step=250,
+                value=int(risk.get("max_weekly_loss", 1000)), step=250,
             )
             max_pos_pct = st.slider(
                 "Max position size", 1, 20,

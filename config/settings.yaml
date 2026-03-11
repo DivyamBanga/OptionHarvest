@@ -3,7 +3,7 @@
 
 # Strategy parameters -- what to sell
 strategy:
-  target_premium: 1.50          # desired premium per contract ($150 actual)
+  target_premium: 0.75          # desired premium per contract ($75 actual)
   option_type: "put"            # "put", "call", or "both" (strangle)
   strike_selection: "premium"   # "premium" or "delta"
   target_delta: 0.10            # used if strike_selection is "delta"
@@ -32,8 +32,8 @@ exit:
 
 # Risk controls -- protect the account
 risk:
-  max_daily_loss: 500.0         # stop trading if daily loss exceeds $500
-  max_weekly_loss: 1500.0       # stop trading if weekly loss exceeds $1500
+  max_daily_loss: 300.0         # stop trading if daily loss exceeds $300
+  max_weekly_loss: 1000.0       # stop trading if weekly loss exceeds $1000
   max_position_pct: 0.05        # max 5% of equity at risk per trade
   circuit_breaker_loss_pct: 0.03  # close all if unrealized loss > 3% of equity
   circuit_breaker_qqq_move: 0.03  # close all if QQQ moves > 3% from open
